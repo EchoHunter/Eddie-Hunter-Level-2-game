@@ -31,6 +31,8 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 	hero h = new hero(50, 50, 50, 50, 50, 50);
 	ArrayList<terrain> t = new ArrayList<terrain>();
 	ArrayList<grunt> g = new ArrayList<grunt>();
+	ArrayList<projectile> p = new ArrayList<projectile>();
+
 	GameManager() {
 		frameDraw = new Timer(1000 / 60, this);
 		frameDraw.start();
@@ -63,12 +65,27 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 		}
 		h.draw(g);
 		drawTerrain(g);
+		drawProjectiles(g);
 	}
 
 	void drawTerrain(Graphics g) {
 		for (terrain f : t) {
 			f.draw(g);
 		}
+	}
+	void drawProjectiles(Graphics g) {
+		for(projectile h: p) {
+			h.draw(g);
+		}
+	}
+	void updateProjectiles() {
+		for(projectile h:p) {
+			h.update();
+		}
+	}
+	
+	void addProjectile() {
+		p.add(new projectile(h.x, h.y,15,15,h.x,h.y));
 	}
 
 	void drawEndState(Graphics g) {
@@ -87,29 +104,48 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 	void updateOpeningState() {
 
 	}
-
+	int enemyTurnTime = 0;
 	void updateGameState() {
-		if(checkWall()) {
-		h.x = h.originx;
-		h.y = h.originy;
-		h.clicked = false;
+		if (checkWall()) {
+			h.x = h.originx;
+			h.y = h.originy;
+			h.clicked = false;
 		}
 		h.update();
-		
+		updateProjectiles();
+		checkProjectileMove();
+		if((turn == enemyTurn)&&(enemyTurnTime < 180)) {
+			enemyTurnTime++;
+		}
+		else if ((turn == enemyTurn)&&(enemyTurnTime >= 180)){
+			turn = playerTurn;
+		}
 	}
 
 	void updateEndState() {
 
+	}
+	
+void checkProjectileMove() {
+		for( projectile g : p) {
+			if((g.x == g.newX)&&(g.y == g.newY)) {
+				p.remove(g);
+			}
+		}
 	}
 
 	final int MENU = 1;
 	final int GAME = 2;
 	final int END = 3;
 
+	final int playerTurn = 0;
+	final int enemyTurn = 1;
+	int turn = playerTurn;
 	int enterTimes = 0;
 	int currentState = MENU;
 	int spacePressed = 0;
 	boolean attackMode = false;
+
 	@Override
 	public void keyPressed(KeyEvent arg0) {
 		// TODO Auto-generated method stub
@@ -139,18 +175,20 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 
 		if (arg0.getKeyCode() == KeyEvent.VK_SPACE) {
 			if (currentState == MENU) {
-				JOptionPane.showMessageDialog(null, "click and drag on your character to move, press space to enter attack mode and press space to leave it. When in attack mode, click in the direction you want to throw a knife and a knife will move until it hits something(or someone)");
+				JOptionPane.showMessageDialog(null,
+						"click and drag on your character to move, press space to enter attack mode and press space to leave it (when you leave attack mode, your turn ends). When in attack mode, click in the direction you want to throw a knife and a knife will move until it hits something(or someone)");
 			}
 			if (currentState == GAME) {
 				spacePressed++;
-				if(spacePressed == 1) {
+				if (spacePressed == 1) {
 					attackMode = true;
 				}
-				if(spacePressed == 2) {
+				if (spacePressed == 2) {
 					spacePressed = 0;
 					attackMode = false;
+					turn = enemyTurn;
 				}
-			System.out.println(attackMode);
+				System.out.println(attackMode);
 			}
 		}
 	}
@@ -168,10 +206,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 	}
 
 	void startGame() {
-		for (int i = 0; i < 35; i++) {
-			// t.add(new terrain( rand.nextInt(1400)+100, rand.nextInt(900)+100,
-			// rand.nextInt(150)+20, rand.nextInt(50)+10, 10, 10));
-		}
+
 
 		while (t.size() < 35) {
 			int terrainX = rand.nextInt(1400) + 100;
@@ -203,12 +238,12 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 		for (terrain z : t) {
 			if (h.collisionBox.intersects(z.collisionBox)) {
 				return true;
-				
+
 			}
-			
+
 		}
 		return false;
-		
+
 	}
 
 	public void paintComponent(Graphics g) {
@@ -222,7 +257,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 			drawEndState(g);
 		}
 	}
-
+	
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
 		// TODO Auto-generated method stub
@@ -239,7 +274,9 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 		repaint();
 
 	}
-
+	
+	
+	
 	@Override
 	public void mouseClicked(MouseEvent arg0) {
 		// TODO Auto-generated method stub
@@ -257,13 +294,21 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 		// TODO Auto-generated method stub
 
 	}
-
+int newPX;
+int newPY;
 	@Override
 	public void mousePressed(MouseEvent arg0) {
 		// TODO Auto-generated method stub
 		mouseX = arg0.getX() - this.getLocationOnScreen().x;
 		mouseY = arg0.getY() - this.getLocationOnScreen().y;
 		checkButton();
+		if (turn == playerTurn) {
+		if(attackMode) {
+			newPX = mouseX;
+			newPY = mouseY;
+			addProjectile();
+		}
+		}
 	}
 
 	@Override
@@ -279,9 +324,13 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 		// TODO Auto-generated method stub
 		mouseX = arg0.getX() - this.getLocationOnScreen().x;
 		mouseY = arg0.getY() - this.getLocationOnScreen().y;
-		if (h.clicked) {
-			h.x = mouseX - h.width / 2;
-			h.y = mouseY - h.height / 2;
+		if (attackMode == false) {
+			if (turn == playerTurn) {
+				if (h.clicked) {
+					h.x = mouseX - h.width / 2;
+					h.y = mouseY - h.height / 2;
+				}
+			}
 		}
 
 	}
