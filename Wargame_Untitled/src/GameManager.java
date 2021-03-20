@@ -106,11 +106,6 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 	}
 	int enemyTurnTime = 0;
 	void updateGameState() {
-		if (checkWall()) {
-			h.x = h.originx;
-			h.y = h.originy;
-			h.clicked = false;
-		}
 		h.update();
 		updateProjectiles();
 		checkProjectileMove();
@@ -235,6 +230,7 @@ void checkProjectileMove() {
 	}
 
 	boolean checkWall() {
+	    h.update();
 		for (terrain z : t) {
 			if (h.collisionBox.intersects(z.collisionBox)) {
 				return true;
@@ -298,7 +294,6 @@ int newPX;
 int newPY;
 	@Override
 	public void mousePressed(MouseEvent arg0) {
-		// TODO Auto-generated method stub
 		mouseX = arg0.getX() - this.getLocationOnScreen().x;
 		mouseY = arg0.getY() - this.getLocationOnScreen().y;
 		checkButton();
@@ -313,26 +308,67 @@ int newPY;
 
 	@Override
 	public void mouseReleased(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		h.clicked = false;
-		h.originx = h.x;
-		h.originy = h.y;
+        /*
+         * DMC Update hero's position
+         */
+        if(h.clicked) {
+            h.x = h.futureX;
+            h.y = h.futureY;
+        }
+        
+        /*
+         * DMC Move the hero back to the original position if dropped on a
+         * terrain object
+         */
+	    if (checkWall()) {
+	        h.x = h.originx;
+	        h.y = h.originy;
+	        h.clicked = false;
+	    }
+	    
+	    /*
+	     * DMC Must be done after checking for terrain wall collisions
+	     */
+	    h.originx = h.x;
+        h.originy = h.y;
+		
+		/*
+		 * DMC Put this as the last line in the method 
+		 */
+		h.reset();
 	}
 
 	@Override
 	public void mouseDragged(MouseEvent arg0) {
-		// TODO Auto-generated method stub
 		mouseX = arg0.getX() - this.getLocationOnScreen().x;
 		mouseY = arg0.getY() - this.getLocationOnScreen().y;
-		if (attackMode == false) {
-			if (turn == playerTurn) {
-				if (h.clicked) {
-					h.x = mouseX - h.width / 2;
-					h.y = mouseY - h.height / 2;
-				}
-			}
-		}
-
+		
+		/*
+		 * DMC Move to future location
+		 */
+        if (attackMode == false) {
+            if (turn == playerTurn) {
+                if( h.clicked && h.haveMovementCircle() ) {
+                    if( h.isMouseInsideMovementArea(mouseX, mouseY) ) {
+                        h.futureX = mouseX - (h.width / 2);
+                        h.futureY = mouseY - (h.height / 2 );
+                    } else {
+                        /*
+                         * Clamp cast
+                         */
+                        //double[] position = h.getFutureMovementPosition(mouseX, mouseY);
+                        //h.futureX = (int)position[0];
+                        //h.futureY = (int)position[1];
+                        
+                        /*
+                         * Return back to starting position
+                         */
+                        h.futureX = h.x;
+                        h.futureY = h.y;
+                    }
+                }
+            }
+        }
 	}
 
 	int mouseX = 0;
@@ -340,7 +376,6 @@ int newPY;
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
-		// TODO Auto-generated method stub
 		mouseX = e.getX() - this.getLocationOnScreen().x;
 		mouseY = e.getY() - this.getLocationOnScreen().y;
 	}
@@ -366,7 +401,8 @@ int newPY;
 				h.x = mouseX - h.width / 2;
 				h.y = mouseY - h.height / 2;
 				repaint();
-				h.clicked = true;
+				
+				h.heroClicked();
 			}
 		}
 		System.out.println("button checked");
