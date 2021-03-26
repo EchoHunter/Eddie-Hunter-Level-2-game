@@ -11,6 +11,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Random;
 
 import javax.imageio.ImageIO;
@@ -73,19 +74,50 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 			f.draw(g);
 		}
 	}
+
 	void drawProjectiles(Graphics g) {
-		for(projectile h: p) {
-			h.draw(g);
+
+		for (projectile h : p) {
+			if (h.isActive) {
+				h.draw(g);
+			}
 		}
 	}
+
+	void removeProjectiles() {
+		Iterator<projectile> m = p.iterator();
+		while (m.hasNext()) {
+			projectile c = m.next();
+			if (!c.isActive) {
+				m.remove();
+				
+			}
+		}
+	}
+
+	void checkProjectileIntersect() {
+		for (projectile m : p) {
+			for (terrain d : t) {
+				if (m.collisionBox.intersects(d.collisionBox)) {
+					m.isActive = false;
+					System.out.println("checked");
+				}
+			}
+		}
+	}
+
 	void updateProjectiles() {
-		for(projectile h:p) {
-			h.update();
+
+		for (projectile m : p) {
+			m.update();
 		}
 	}
-	
-	void addProjectile() {
-		p.add(new projectile(h.x, h.y,15,15,h.x,h.y));
+
+	void addProjectile(int newX, int newY) {
+		projectile pro = new projectile(h.x, h.y, 35, 35, h.x, h.y);
+		pro.setNewXNewY(newX, newY);
+		p.add(pro);
+		System.out.println(p.size());
 	}
 
 	void drawEndState(Graphics g) {
@@ -104,15 +136,19 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 	void updateOpeningState() {
 
 	}
+
 	int enemyTurnTime = 0;
+
 	void updateGameState() {
 		h.update();
 		updateProjectiles();
 		checkProjectileMove();
-		if((turn == enemyTurn)&&(enemyTurnTime < 180)) {
+		checkProjectileIntersect();
+		removeProjectiles();
+		System.out.println("update");
+		if ((turn == enemyTurn) && (enemyTurnTime < 180)) {
 			enemyTurnTime++;
-		}
-		else if ((turn == enemyTurn)&&(enemyTurnTime >= 180)){
+		} else if ((turn == enemyTurn) && (enemyTurnTime >= 180)) {
 			turn = playerTurn;
 		}
 	}
@@ -120,10 +156,10 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 	void updateEndState() {
 
 	}
-	
-void checkProjectileMove() {
-		for( projectile g : p) {
-			if((g.x == g.newX)&&(g.y == g.newY)) {
+
+	void checkProjectileMove() {
+		for (projectile g : p) {
+			if ((g.x == g.newX) && (g.y == g.newY)) {
 				p.remove(g);
 			}
 		}
@@ -182,6 +218,7 @@ void checkProjectileMove() {
 					spacePressed = 0;
 					attackMode = false;
 					turn = enemyTurn;
+					removeProjectiles();
 				}
 				System.out.println(attackMode);
 			}
@@ -201,7 +238,6 @@ void checkProjectileMove() {
 	}
 
 	void startGame() {
-
 
 		while (t.size() < 35) {
 			int terrainX = rand.nextInt(1400) + 100;
@@ -230,7 +266,7 @@ void checkProjectileMove() {
 	}
 
 	boolean checkWall() {
-	    h.update();
+		h.update();
 		for (terrain z : t) {
 			if (h.collisionBox.intersects(z.collisionBox)) {
 				return true;
@@ -253,7 +289,7 @@ void checkProjectileMove() {
 			drawEndState(g);
 		}
 	}
-	
+
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
 		// TODO Auto-generated method stub
@@ -270,9 +306,7 @@ void checkProjectileMove() {
 		repaint();
 
 	}
-	
-	
-	
+
 	@Override
 	public void mouseClicked(MouseEvent arg0) {
 		// TODO Auto-generated method stub
@@ -290,50 +324,51 @@ void checkProjectileMove() {
 		// TODO Auto-generated method stub
 
 	}
-int newPX;
-int newPY;
+
 	@Override
 	public void mousePressed(MouseEvent arg0) {
 		mouseX = arg0.getX() - this.getLocationOnScreen().x;
 		mouseY = arg0.getY() - this.getLocationOnScreen().y;
 		checkButton();
 		if (turn == playerTurn) {
-		if(attackMode) {
-			newPX = mouseX;
-			newPY = mouseY;
-			addProjectile();
-		}
+			if (attackMode) {
+
+				addProjectile(mouseX, mouseY);
+			}
 		}
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent arg0) {
-        /*
-         * DMC Update hero's position
-         */
-        if(h.clicked) {
-            h.x = h.futureX;
-            h.y = h.futureY;
-        }
-        
-        /*
-         * DMC Move the hero back to the original position if dropped on a
-         * terrain object
-         */
-	    if (checkWall()) {
-	        h.x = h.originx;
-	        h.y = h.originy;
-	        h.clicked = false;
-	    }
-	    
-	    /*
-	     * DMC Must be done after checking for terrain wall collisions
-	     */
-	    h.originx = h.x;
-        h.originy = h.y;
-		
 		/*
-		 * DMC Put this as the last line in the method 
+		 * DMC Update hero's position
+		 */
+		if (h.clicked) {
+			h.x = h.futureX;
+			h.y = h.futureY;
+
+		}
+
+		/*
+		 * DMC Move the hero back to the original position if dropped on a terrain
+		 * object
+		 */
+		if (checkWall()) {
+			h.x = h.originx;
+			h.y = h.originy;
+			h.clicked = false;
+		} else if (h.clicked) {
+			attackMode = true;
+		}
+
+		/*
+		 * DMC Must be done after checking for terrain wall collisions
+		 */
+		h.originx = h.x;
+		h.originy = h.y;
+
+		/*
+		 * DMC Put this as the last line in the method
 		 */
 		h.reset();
 	}
@@ -342,33 +377,33 @@ int newPY;
 	public void mouseDragged(MouseEvent arg0) {
 		mouseX = arg0.getX() - this.getLocationOnScreen().x;
 		mouseY = arg0.getY() - this.getLocationOnScreen().y;
-		
+
 		/*
 		 * DMC Move to future location
 		 */
-        if (attackMode == false) {
-            if (turn == playerTurn) {
-                if( h.clicked && h.haveMovementCircle() ) {
-                    if( h.isMouseInsideMovementArea(mouseX, mouseY) ) {
-                        h.futureX = mouseX - (h.width / 2);
-                        h.futureY = mouseY - (h.height / 2 );
-                    } else {
-                        /*
-                         * Clamp cast
-                         */
-                        //double[] position = h.getFutureMovementPosition(mouseX, mouseY);
-                        //h.futureX = (int)position[0];
-                        //h.futureY = (int)position[1];
-                        
-                        /*
-                         * Return back to starting position
-                         */
-                        h.futureX = h.x;
-                        h.futureY = h.y;
-                    }
-                }
-            }
-        }
+		if (turn == playerTurn) {
+			if (attackMode == false) {
+				if (h.clicked && h.haveMovementCircle()) {
+					if (h.isMouseInsideMovementArea(mouseX, mouseY)) {
+						h.futureX = mouseX - (h.width / 2);
+						h.futureY = mouseY - (h.height / 2);
+					} else {
+						/*
+						 * Clamp cast
+						 */
+						// double[] position = h.getFutureMovementPosition(mouseX, mouseY);
+						// h.futureX = (int)position[0];
+						// h.futureY = (int)position[1];
+
+						/*
+						 * Return back to starting position
+						 */
+						h.futureX = h.x;
+						h.futureY = h.y;
+					}
+				}
+			}
+		}
 	}
 
 	int mouseX = 0;
@@ -401,7 +436,7 @@ int newPY;
 				h.x = mouseX - h.width / 2;
 				h.y = mouseY - h.height / 2;
 				repaint();
-				
+
 				h.heroClicked();
 			}
 		}

@@ -13,7 +13,7 @@ public class hero extends GameObject {
     /*
      *  DMC New variables
      */
-    int movementRadius = 100;
+    int movementRadius = 300;
     Integer movementX = null;
     Integer movementY = null;
     Integer futureX = null;

@@ -6,7 +6,7 @@ public class GameObject {
 	int width;
 	int height;
 	Rectangle collisionBox;
-
+	boolean isActive = true;
 	GameObject(int a, int b, int c, int d, int o, int p) {
 		this.x = a;
 		this.y = b;
