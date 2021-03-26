@@ -145,7 +145,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 		checkProjectileMove();
 		checkProjectileIntersect();
 		removeProjectiles();
-		System.out.println("update");
+		
 		if ((turn == enemyTurn) && (enemyTurnTime < 180)) {
 			enemyTurnTime++;
 		} else if ((turn == enemyTurn) && (enemyTurnTime >= 180)) {
