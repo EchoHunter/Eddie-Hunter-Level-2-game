@@ -145,13 +145,14 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 	
 	void updateGrunt() {
 		for(grunt g:grunts) {
+			
+			
 			g.update();
 		}
 	}
 	void drawGrunt(Graphics c) {
 		for(grunt g:grunts) {
-			g.draw(c);
-			
+			g.draw(c);	
 		}
 	}
 
@@ -256,6 +257,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 						if(h.collisionBox.intersects(g.collisionBox)) {
 							currentState = END;
 						}
+						
 					}
 					turn = playerTurn;
 					removeProjectiles();
