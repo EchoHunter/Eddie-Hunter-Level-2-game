@@ -31,7 +31,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 	Font lowerFont = new Font("Arial", Font.PLAIN, 25);
 	hero h = new hero(50, 50, 50, 50, 50, 50);
 	ArrayList<terrain> t = new ArrayList<terrain>();
-	ArrayList<grunt> g = new ArrayList<grunt>();
+	ArrayList<grunt> grunts = new ArrayList<grunt>();
 	ArrayList<projectile> p = new ArrayList<projectile>();
 
 	GameManager() {
@@ -67,6 +67,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 		h.draw(g);
 		drawTerrain(g);
 		drawProjectiles(g);
+		drawGrunt(g);
 	}
 
 	void drawTerrain(Graphics g) {
@@ -88,9 +89,9 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 		Iterator<projectile> m = p.iterator();
 		while (m.hasNext()) {
 			projectile c = m.next();
-			if (!c.isActive) {
+			if (c.isActive==false) {
 				m.remove();
-				
+				System.out.println("removed knife");
 			}
 		}
 	}
@@ -102,7 +103,14 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 					m.isActive = false;
 					System.out.println("checked");
 				}
+				
 			}
+		if((m.x>GameRunner.w)||(m.x<0)) {
+			m.isActive = false;
+		}
+		if((m.y>GameRunner.h)||(m.y<0)) {
+			m.isActive = false;
+		}
 		}
 	}
 
@@ -118,6 +126,33 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 		pro.setNewXNewY(newX, newY);
 		p.add(pro);
 		System.out.println(p.size());
+	}
+	
+	void addGrunt() {
+		boolean addgrunt = true;
+		grunt testGrunt = new grunt(rand.nextInt(GameRunner.w-235)+200, rand.nextInt(GameRunner.h-235)+200,35,35,0,0);
+		while(addgrunt) {
+			for(terrain x:t) {
+				if(testGrunt.collisionBox.intersects(x.collisionBox)) {
+					testGrunt = new grunt(rand.nextInt(GameRunner.w-235)+200, rand.nextInt(GameRunner.h-235)+200,35,35,0,0);
+				break;
+				}
+			}
+			grunts.add(testGrunt);
+			addgrunt = false;
+		}
+	}
+	
+	void updateGrunt() {
+		for(grunt g:grunts) {
+			g.update();
+		}
+	}
+	void drawGrunt(Graphics c) {
+		for(grunt g:grunts) {
+			g.draw(c);
+			
+		}
 	}
 
 	void drawEndState(Graphics g) {
@@ -137,7 +172,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 
 	}
 
-	int enemyTurnTime = 0;
+
 
 	void updateGameState() {
 		h.update();
@@ -145,12 +180,8 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 		checkProjectileMove();
 		checkProjectileIntersect();
 		removeProjectiles();
+		updateGrunt();
 		
-		if ((turn == enemyTurn) && (enemyTurnTime < 180)) {
-			enemyTurnTime++;
-		} else if ((turn == enemyTurn) && (enemyTurnTime >= 180)) {
-			turn = playerTurn;
-		}
 	}
 
 	void updateEndState() {
@@ -218,6 +249,15 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 					spacePressed = 0;
 					attackMode = false;
 					turn = enemyTurn;
+					for(grunt g:grunts) {
+						g.setXandY(h.x, h.y);
+						System.out.println("x and y set");
+						g.takeTurn();
+						if(h.collisionBox.intersects(g.collisionBox)) {
+							currentState = END;
+						}
+					}
+					turn = playerTurn;
 					removeProjectiles();
 				}
 				System.out.println(attackMode);
@@ -238,7 +278,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 	}
 
 	void startGame() {
-
+		addGrunt();
 		while (t.size() < 35) {
 			int terrainX = rand.nextInt(1400) + 100;
 			int terrainY = rand.nextInt(900) + 100;
@@ -430,6 +470,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 
 	void checkButton() {
 		System.out.println(mouseX + " " + mouseY + " " + h.x + " " + h.y);
+		if(attackMode == false) {
 		if ((mouseX > h.x) && (mouseX < h.x + h.width)) {
 			if ((mouseY > h.y) && (mouseY < h.y + h.height)) {
 				System.out.println("clicked");
@@ -441,6 +482,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 			}
 		}
 		System.out.println("button checked");
+	}
 	}
 
 	void Generate(Graphics g) {

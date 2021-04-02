@@ -26,9 +26,10 @@ int newY;
 	int yDiff;
 
 	void update() {
+		super.update();
 		if ((Math.abs(xDiff) > speed) || (Math.abs(yDiff) > speed)) {
 			double angleRad = Math.atan2(yDiff, xDiff);
-
+			
 			super.x += Math.cos(angleRad) * speed;
 			super.y += Math.sin(angleRad) * speed;
 		}
