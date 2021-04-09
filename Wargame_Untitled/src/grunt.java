@@ -1,6 +1,8 @@
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Rectangle;
+import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
 public class grunt extends GameObject {
 	public static BufferedImage image;
@@ -8,9 +10,11 @@ public class grunt extends GameObject {
 	public static boolean gotImage = false;
 	int newX;
 	int newY;
-
+	Rectangle movementRange ;
+	
 	grunt(int a, int b, int c, int d, int o, int p) {
 		super(a, b, c, d, o, p);
+		movementRange = new Rectangle (x-10,y-10,20,20);
 		// TODO Auto-generated constructor stub
 	}
 	void draw(Graphics g) {
@@ -19,6 +23,7 @@ public class grunt extends GameObject {
 		} else {
 			g.setColor(Color.RED);
 			g.fillRect(x, y, width, height);
+			
 		}
 	}
 	int speed = 10;
@@ -28,7 +33,7 @@ public class grunt extends GameObject {
 	void update() {
 		super.update();
 		if(moveLimit<100) {
-		if ((Math.abs(xDiff) > speed) || (Math.abs(yDiff) > speed)) {
+			if ((Math.abs(xDiff) > speed) || (Math.abs(yDiff) > speed)) {
 			double angleRad = Math.atan2(yDiff, xDiff);
 			
 			super.x += Math.cos(angleRad) * speed;
