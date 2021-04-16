@@ -89,7 +89,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 		Iterator<projectile> m = p.iterator();
 		while (m.hasNext()) {
 			projectile c = m.next();
-			if (c.isActive==false) {
+			if (c.isActive == false) {
 				m.remove();
 				System.out.println("removed knife");
 			}
@@ -103,18 +103,18 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 					m.isActive = false;
 					System.out.println("checked");
 				}
-				
+
 			}
-		if((m.x>GameRunner.w)||(m.x<0)) {
-			m.isActive = false;
+			if ((m.x > GameRunner.w) || (m.x < 0)) {
+				m.isActive = false;
+			}
+			if ((m.y > GameRunner.h) || (m.y < 0)) {
+				m.isActive = false;
+			}
 		}
-		if((m.y>GameRunner.h)||(m.y<0)) {
-			m.isActive = false;
-		}
-		}
-		for(grunt g:grunts) {
-			for(projectile m:p) {
-				if(g.collisionBox.intersects(m.collisionBox)) {
+		for (grunt g : grunts) {
+			for (projectile m : p) {
+				if (g.collisionBox.intersects(m.collisionBox)) {
 					g.isActive = false;
 					m.isActive = false;
 				}
@@ -135,50 +135,85 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 		p.add(pro);
 		System.out.println(p.size());
 	}
-	int gruntCount=0;
+
+	int gruntCount = 0;
+
 	void addGrunt() {
 		boolean addgrunt = true;
-		boolean gruntIntersects = false;
-		grunt testGrunt = new grunt(rand.nextInt(GameRunner.w-235)+200, rand.nextInt(GameRunner.h-235)+200,35,35,0,0);
-		while(addgrunt) {
-			if(gruntIntersects) {
-			for(terrain x:t) {
-				if(testGrunt.collisionBox.intersects(x.collisionBox)) {
-				gruntIntersects = true;
-				break;
+		
+		grunt testGrunt = new grunt(rand.nextInt(GameRunner.w - 235) + 200, rand.nextInt(GameRunner.h - 235) + 200, 35,35, 0, 0);
+		while (addgrunt) {
+			boolean gruntIntersects = false;
+			if (!gruntIntersects) {
+				for (terrain x : t) {
+					if (testGrunt.collisionBox.intersects(x.collisionBox)) {
+						gruntIntersects = true;
+						testGrunt = new grunt(rand.nextInt(GameRunner.w - 235) + 200, rand.nextInt(GameRunner.h - 235) + 200, 35,35, 0, 0);
+						break;
+					}
 				}
 			}
-			}
-			if(gruntIntersects == false) {
-			grunts.add(testGrunt);
-			addgrunt = false;
+			if (gruntIntersects == false) {
+				grunts.add(testGrunt);
+				addgrunt = false;
 			}
 		}
-	gruntCount++;
+		gruntCount++;
 	}
+
 	void removeGrunts() {
 		Iterator<grunt> z = grunts.iterator();
 		while (z.hasNext()) {
 			grunt c = z.next();
-			if (c.isActive==false) {
+			if (c.isActive == false) {
 				z.remove();
 				System.out.println("removed knife");
 			}
 		}
 	}
-	
+
 	void updateGrunt() {
-		for(grunt g:grunts) {
-			
-			
+		for (grunt g : grunts) {
+
 			g.update();
 		}
 	}
+
 	void drawGrunt(Graphics c) {
-		for(grunt g:grunts) {
-			g.draw(c);	
+		for (grunt g : grunts) {
+			g.draw(c);
 		}
 	}
+	
+	void checkGruntCollision() {
+		if(turn == enemyTurn) {
+		for (grunt g : grunts) {
+			System.out.println("x and y set");
+			int moveX = rand.nextInt(21) - 10;
+			int moveY = rand.nextInt(21) - 10;
+			Rectangle newMove = new Rectangle(moveX,moveY,1,1);
+			boolean movementRangeIntersects = true;
+			for (terrain v : t) {
+				while (movementRangeIntersects) {
+
+					if (!g.movementRange.intersects(v.collisionBox)) {
+						g.takeTurn();
+						movementRangeIntersects = false;
+					} else {
+						g.setXandY(moveX, moveY);
+						while (newMove.intersects(v.collisionBox)) {
+							moveX = rand.nextInt(21) - 10;
+							moveY = rand.nextInt(21) - 10;
+							newMove = new Rectangle(moveX,moveY,1,1);
+							g.setXandY(moveX, moveY);
+						}
+					}
+				}
+			}
+		}
+		}
+	}
+	
 
 	void drawEndState(Graphics g) {
 		g.setColor(Color.BLACK);
@@ -197,8 +232,6 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 
 	}
 
-
-
 	void updateGameState() {
 		h.update();
 		updateProjectiles();
@@ -206,6 +239,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 		checkProjectileIntersect();
 		removeProjectiles();
 		updateGrunt();
+		checkGruntCollision();
 		removeGrunts();
 	}
 
@@ -214,11 +248,15 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 	}
 
 	void checkProjectileMove() {
-		for (projectile g : p) {
-			if ((g.x == g.newX) && (g.y == g.newY)) {
-				p.remove(g);
+		Iterator <projectile> g = p.iterator();
+		while (g.hasNext()) {
+			projectile c = g.next();
+			if ((c.x == c.newX)&&(c.y == c.newY)) {
+				g.remove();
+				System.out.println("removed knife");
 			}
 		}
+		
 	}
 
 	final int MENU = 1;
@@ -275,26 +313,11 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 					attackMode = false;
 					turn = enemyTurn;
 					for(grunt g:grunts) {
-						double angleRad = Math.atan2(g.yDiff, g.xDiff);
-						g.setXandY(h.x, h.y);
-						System.out.println("x and y set");
-						for(terrain v: t) {
-							if(!g.movementRange.intersects(v.collisionBox)) {
-							g.takeTurn();
-							}
-							else {
-								while() {
-									
-								}
-						}
-						
-						
-						
-						if(h.collisionBox.intersects(g.collisionBox)) {
+					g.setXandY(h.x, h.y);
+						if (h.collisionBox.intersects(g.collisionBox)) {
 							currentState = END;
 						}
 					}
-				}
 					}
 					turn = playerTurn;
 					removeProjectiles();
@@ -302,7 +325,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 				System.out.println(attackMode);
 			}
 		}
-	}
+	
 
 	@Override
 	public void keyReleased(KeyEvent arg0) {
@@ -317,9 +340,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 	}
 
 	void startGame() {
-		for (int i = 0; i < 13; i++) {
-			addGrunt();	
-		}
+		
 		while (t.size() < 35) {
 			int terrainX = rand.nextInt(1400) + 100;
 			int terrainY = rand.nextInt(900) + 100;
@@ -339,6 +360,10 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 			if (intersecting == false) {
 				t.add(new terrain(terrainX, terrainY, terrainWidth, terrainHeight, 10, 10));
 			}
+			
+		}
+		for (int i = 0; i < 13; i++) {
+			addGrunt();
 		}
 	}
 
@@ -511,19 +536,19 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 
 	void checkButton() {
 		System.out.println(mouseX + " " + mouseY + " " + h.x + " " + h.y);
-		if(attackMode == false) {
-		if ((mouseX > h.x) && (mouseX < h.x + h.width)) {
-			if ((mouseY > h.y) && (mouseY < h.y + h.height)) {
-				System.out.println("clicked");
-				h.x = mouseX - h.width / 2;
-				h.y = mouseY - h.height / 2;
-				repaint();
+		if (attackMode == false) {
+			if ((mouseX > h.x) && (mouseX < h.x + h.width)) {
+				if ((mouseY > h.y) && (mouseY < h.y + h.height)) {
+					System.out.println("clicked");
+					h.x = mouseX - h.width / 2;
+					h.y = mouseY - h.height / 2;
+					repaint();
 
-				h.heroClicked();
+					h.heroClicked();
+				}
 			}
+			System.out.println("button checked");
 		}
-		System.out.println("button checked");
-	}
 	}
 
 	void Generate(Graphics g) {

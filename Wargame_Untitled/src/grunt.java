@@ -14,7 +14,7 @@ public class grunt extends GameObject {
 	
 	grunt(int a, int b, int c, int d, int o, int p) {
 		super(a, b, c, d, o, p);
-		movementRange = new Rectangle (x-10,y-10,20,20);
+		movementRange = new Rectangle (x-10,y-10,width+20,height+20);
 		// TODO Auto-generated constructor stub
 	}
 	void draw(Graphics g) {
@@ -41,7 +41,7 @@ public class grunt extends GameObject {
 			moveLimit += speed;
 		}
 		}
-
+		movementRange.setBounds(x-10,y-10,20,20);
 	}
 	void takeTurn() {
 	moveLimit = 0;
