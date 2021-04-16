@@ -275,13 +275,26 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 					attackMode = false;
 					turn = enemyTurn;
 					for(grunt g:grunts) {
+						double angleRad = Math.atan2(g.yDiff, g.xDiff);
 						g.setXandY(h.x, h.y);
 						System.out.println("x and y set");
-						g.takeTurn();
+						for(terrain v: t) {
+							if(!g.movementRange.intersects(v.collisionBox)) {
+							g.takeTurn();
+							}
+							else {
+								while() {
+									
+								}
+						}
+						
+						
+						
 						if(h.collisionBox.intersects(g.collisionBox)) {
 							currentState = END;
 						}
-						
+					}
+				}
 					}
 					turn = playerTurn;
 					removeProjectiles();
