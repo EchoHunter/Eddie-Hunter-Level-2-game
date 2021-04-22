@@ -204,7 +204,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 						while (newMove.intersects(v.collisionBox)) {
 							moveX = rand.nextInt(21) - 10;
 							moveY = rand.nextInt(21) - 10;
-							newMove = new Rectangle(moveX,moveY,1,1);
+							newMove.setBounds(moveX,moveY,1,1);
 							g.setXandY(moveX, moveY);
 						}
 					}
