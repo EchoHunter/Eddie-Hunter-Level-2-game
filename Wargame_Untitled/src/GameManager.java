@@ -33,6 +33,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 	ArrayList<terrain> t = new ArrayList<terrain>();
 	ArrayList<grunt> grunts = new ArrayList<grunt>();
 	ArrayList<projectile> p = new ArrayList<projectile>();
+	boolean gruntMove = false;
 
 	GameManager() {
 		frameDraw = new Timer(1000 / 60, this);
@@ -174,7 +175,6 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 
 	void updateGrunt() {
 		for (grunt g : grunts) {
-
 			g.update();
 		}
 	}
@@ -185,28 +185,45 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 		}
 	}
 	
-	void checkGruntCollision() {
-		if(turn == enemyTurn) {
+	void checkGruntCollision() {		
+		if(gruntMove) {
 		for (grunt g : grunts) {
+			Rectangle newMove;
 			System.out.println("x and y set");
-			int moveX = rand.nextInt(21) - 10;
-			int moveY = rand.nextInt(21) - 10;
-			Rectangle newMove = new Rectangle(moveX,moveY,1,1);
+			int moveX =g.x + (g.width)/2 + rand.nextInt(21) - 10;
+			int moveY = g.y + (g.height/2)+ rand.nextInt(21) - 10;
+			newMove = new Rectangle (g.x,g.y,1,1);
+			
+			if((g.x<h.x) &&(g.y<h.y)) {
+				newMove = new Rectangle(g.x+10,g.y+10,1,1);
+			}
+			else if ((g.x>h.x)&&(g.y<h.y)) {
+				newMove = new Rectangle(g.x-10,g.y+10,1,1);
+			}
+			else if ((g.x<h.x)&&(g.y>h.y)) {
+				newMove = new Rectangle(g.x+10,g.y-10,1,1);
+			}
+			if((g.x>h.x) &&(g.y>h.y)) {
+				newMove = new Rectangle(g.x-10,g.y-10,1,1);
+			}
+			
 			boolean movementRangeIntersects = true;
 			for (terrain v : t) {
 				while (movementRangeIntersects) {
 
-					if (!g.movementRange.intersects(v.collisionBox)) {
+					if (!newMove.intersects(v.collisionBox)) {
+					
 						g.takeTurn();
 						movementRangeIntersects = false;
+						
 					} else {
-						g.setXandY(moveX, moveY);
+						newMove.setBounds(moveX,moveY,1,1);
 						while (newMove.intersects(v.collisionBox)) {
-							moveX = rand.nextInt(21) - 10;
-							moveY = rand.nextInt(21) - 10;
+							moveX = g.x + (g.width)/2 + rand.nextInt(21) - 10;
+							moveY = g.y + (g.height/2)+ rand.nextInt(21) - 10;
 							newMove.setBounds(moveX,moveY,1,1);
-							g.setXandY(moveX, moveY);
 						}
+						g.setXandY(moveX, moveY);
 					}
 				}
 			}
@@ -238,8 +255,8 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 		checkProjectileMove();
 		checkProjectileIntersect();
 		removeProjectiles();
-		updateGrunt();
 		checkGruntCollision();
+		updateGrunt();
 		removeGrunts();
 	}
 
@@ -312,6 +329,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 					spacePressed = 0;
 					attackMode = false;
 					turn = enemyTurn;
+					gruntMove = true;
 					for(grunt g:grunts) {
 					g.setXandY(h.x, h.y);
 						if (h.collisionBox.intersects(g.collisionBox)) {
@@ -319,7 +337,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 						}
 					}
 					}
-					turn = playerTurn;
+				turn = playerTurn;
 					removeProjectiles();
 				}
 				System.out.println(attackMode);
@@ -341,30 +359,32 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 
 	void startGame() {
 		
-		while (t.size() < 35) {
-			int terrainX = rand.nextInt(1400) + 100;
-			int terrainY = rand.nextInt(900) + 100;
-			int terrainWidth = rand.nextInt(200) + 20;
-			int terrainHeight = rand.nextInt(100) + 10;
-			Rectangle terrainBox = new Rectangle(terrainX, terrainY, terrainWidth, terrainHeight);
-			boolean intersecting = false;
-			for (terrain z : t) {
-				if (terrainBox.intersects(z.collisionBox)) {
-					intersecting = true;
-
-				} else {
-					intersecting = false;
-				}
-
-			}
-			if (intersecting == false) {
-				t.add(new terrain(terrainX, terrainY, terrainWidth, terrainHeight, 10, 10));
-			}
-			
-		}
-		for (int i = 0; i < 13; i++) {
-			addGrunt();
-		}
+//		while (t.size() < 35) {
+//			int terrainX = rand.nextInt(1400) + 100;
+//			int terrainY = rand.nextInt(900) + 100;
+//			int terrainWidth = rand.nextInt(200) + 20;
+//			int terrainHeight = rand.nextInt(100) + 10;
+//			Rectangle terrainBox = new Rectangle(terrainX, terrainY, terrainWidth, terrainHeight);
+//			boolean intersecting = false;
+//			for (terrain z : t) {
+//				if (terrainBox.intersects(z.collisionBox)) {
+//					intersecting = true;
+//
+//				} else {
+//					intersecting = false;
+//				}
+//
+//			}
+//			if (intersecting == false) {
+//				//t.add(new terrain(terrainX, terrainY, terrainWidth, terrainHeight, 10, 10));
+//			}
+//			
+//		}
+		t.add(new terrain(1000, 500, 100, 100, 10,10));
+		grunts.add(new grunt (1110,610, 25, 25, 10,10));
+//		for (int i = 0; i < 13; i++) {
+//			addGrunt();
+//		}
 	}
 
 	void endGame() {
