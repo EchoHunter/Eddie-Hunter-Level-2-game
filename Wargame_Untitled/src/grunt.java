@@ -41,7 +41,7 @@ public class grunt extends GameObject {
 			moveLimit += speed;
 		}
 		}
-		movementRange.setBounds(x-10,y-10,20,20);
+		movementRange.setBounds(x-17,y-17,20+width,20+height);
 	}
 	void takeTurn() {
 	moveLimit = 0;
