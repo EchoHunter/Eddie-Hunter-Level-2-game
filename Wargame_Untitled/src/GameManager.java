@@ -184,13 +184,14 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 			g.draw(c);
 		}
 	}
-	
+	Rectangle newMove;
+	boolean moveIntersects = false;
 	void checkGruntCollision() {		
 		if(gruntMove) {
 		for (grunt g : grunts) {
 			int xBias = -10;
 			int yBias = -10;
-			Rectangle newMove;
+			
 			System.out.println("x and y set");
 			if(g.x>h.x) {xBias = 3;}
 			if(g.x<h.x) {xBias = 17;}
@@ -218,31 +219,25 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 				newMove = new Rectangle(g.x-g.width-10,g.y-g.height-10,1,1);
 			}
 			
-			boolean movementRangeIntersects = true;
-			for (terrain v : t) {
-				while (movementRangeIntersects) {
-
-					if (!newMove.intersects(v.collisionBox)) {
-					
-						g.takeTurn();
-						movementRangeIntersects = false;
-						
-					} else {
-
-						while (newMove.intersects(v.collisionBox)) {
-							moveX = g.x + (g.width)/2 + rand.nextInt(21) - 10;
-							moveY = g.y + (g.height/2)+ rand.nextInt(21) - 10;
-							newMove.setBounds(moveX,moveY,1,1);
-						}
-						g.setXandY(moveX, moveY);
-					}
-				}
+			
+			checkMove();
+			while(moveIntersects) {
+				
 			}
 		}
 		gruntMove = false;
 		}
 	}
-	
+	void checkMove() {
+		moveIntersects = false;
+		for (terrain v : t) {
+
+			if(newMove.intersects(v.collisionBox)) {
+				moveIntersects = true;
+				break;
+			}
+	}
+	}
 
 	void drawEndState(Graphics g) {
 		g.setColor(Color.BLACK);
