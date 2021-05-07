@@ -141,15 +141,17 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 
 	void addGrunt() {
 		boolean addgrunt = true;
-		
-		grunt testGrunt = new grunt(rand.nextInt(GameRunner.w - 235) + 200, rand.nextInt(GameRunner.h - 235) + 200, 35,35, 0, 0);
+
+		grunt testGrunt = new grunt(rand.nextInt(GameRunner.w - 235) + 200, rand.nextInt(GameRunner.h - 235) + 200, 35,
+				35, 0, 0);
 		while (addgrunt) {
 			boolean gruntIntersects = false;
 			if (!gruntIntersects) {
 				for (terrain x : t) {
 					if (testGrunt.collisionBox.intersects(x.collisionBox)) {
 						gruntIntersects = true;
-						testGrunt = new grunt(rand.nextInt(GameRunner.w - 235) + 200, rand.nextInt(GameRunner.h - 235) + 200, 35,35, 0, 0);
+						testGrunt = new grunt(rand.nextInt(GameRunner.w - 235) + 200,
+								rand.nextInt(GameRunner.h - 235) + 200, 35, 35, 0, 0);
 						break;
 					}
 				}
@@ -184,60 +186,135 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 			g.draw(c);
 		}
 	}
+
 	Rectangle newMove;
 	boolean moveIntersects = false;
-	void checkGruntCollision() {		
-		if(gruntMove) {
-		for (grunt g : grunts) {
-			int xBias = -10;
-			int yBias = -10;
-			
-			System.out.println("x and y set");
-			if(g.x>h.x) {xBias = 3;}
-			if(g.x<h.x) {xBias = 17;}
-			if(g.y>h.y) {yBias = 3;}
-			if(g.y<h.y) {yBias = 17;}
-			
-			int moveX =g.x + (g.width)/2 + rand.nextInt(21) - xBias;
-			int moveY = g.y + (g.height/2)+ rand.nextInt(21) - yBias;
-			if(moveX < -10) {moveX = g.x+(g.width)/2-10;}
-			if(moveX>10) {moveX = g.x+(g.width)/2+10;}
-			if(moveY < -10) {moveY = g.y + (g.height)/2-10;}
-			if(moveY> 10) {moveY = g.y + (g.height)/2 +10;}
-			newMove = new Rectangle (g.x,g.y,1,1);
-			
-			if((g.x<h.x) &&(g.y<h.y)) {
-				newMove = new Rectangle(g.x+10,g.y+10,1,1);
+
+	void checkGruntCollision() {
+		if (gruntMove) {
+			for (grunt g : grunts) {
+				int xBias = -10;
+				int yBias = -10;
+
+				System.out.println("x and y set");
+				if (g.x > h.x) {
+					xBias = 8;
+				}
+				if (g.x < h.x) {
+					xBias = 12;
+				}
+				if (g.y > h.y) {
+					yBias = 8;
+				}
+				if (g.y < h.y) {
+					yBias = 12;
+				}
+
+				int moveX = g.x + (g.width) / 2 + rand.nextInt(21) - xBias;
+				int moveY = g.y + (g.height / 2) + rand.nextInt(21) - yBias;
+				if (moveX < -10) {
+					moveX = g.x + (g.width) / 2 - 10;
+				}
+				if (moveX > 10) {
+					moveX = g.x + (g.width) / 2 + 10;
+				}
+				if (moveY < -10) {
+					moveY = g.y + (g.height) / 2 - 10;
+				}
+				if (moveY > 10) {
+					moveY = g.y + (g.height) / 2 + 10;
+				}
+				newMove = new Rectangle(g.x, g.y, g.width, g.height);
+
+				if ((g.x < h.x) && (g.y < h.y)) {
+					newMove = new Rectangle(g.x + 10, g.y + 10, g.width, g.height);
+				} else if ((g.x > h.x) && (g.y < h.y)) {
+					newMove = new Rectangle(g.x - 10, g.y + 10, g.width, g.height);
+				} else if ((g.x < h.x) && (g.y > h.y)) {
+					newMove = new Rectangle(g.x + 10, g.y - 10, g.width, g.height);
+				} else if ((g.x > h.x) && (g.y > h.y)) {
+					newMove = new Rectangle(g.x - 10, g.y - 10, g.width, g.height);
+				}
+
+				checkMove(g);
+				while (moveIntersects) {
+					for (terrain c : t) {
+						if (newMove.intersects(c.collisionBox)) {
+							moveIntersects = true;
+							break;
+						} else {
+							moveIntersects = false;
+						}
+
+					}
+					if (moveIntersects) {
+						moveX = g.x + (g.width) / 2 + rand.nextInt(21) - xBias;
+						moveY = g.y + (g.height / 2) + rand.nextInt(21) - yBias;
+						if (moveX < -10) {
+							moveX = g.x + (g.width) / 2 - 10;
+						}
+						if (moveX > 10) {
+							moveX = g.x + (g.width) / 2 + 10;
+						}
+						if (moveY < -10) {
+							moveY = g.y + (g.height) / 2 - 10;
+						}
+						if (moveY > 10) {
+							moveY = g.y + (g.height) / 2 + 10;
+						}
+						newMove.setBounds(moveX, moveY, g.width, g.height);
+						moveIntersects = false;
+						for (terrain c : t) {
+							if (newMove.intersects(c.collisionBox)) {
+								moveX = g.x + (g.width) / 2 + rand.nextInt(21) - xBias;
+								moveY = g.y + (g.height / 2) + rand.nextInt(21) - yBias;
+								if (moveX < -10) {
+									moveX = g.x + (g.width) / 2 - 10;
+								}
+								if (moveX > 10) {
+									moveX = g.x + (g.width) / 2 + 10;
+								}
+								if (moveY < -10) {
+									moveY = g.y + (g.height) / 2 - 10;
+								}
+								if (moveY > 10) {
+									moveY = g.y + (g.height) / 2 + 10;
+								}
+								newMove.setBounds(moveX, moveY, g.width, g.height);
+								moveIntersects = true;
+								break;
+							}
+
+						}
+						if (!moveIntersects) {
+							g.takeTurn();
+							g.setXandY(moveX, moveY);
+						}
+
+					}
+
+				}
 			}
-			else if ((g.x>h.x)&&(g.y<h.y)) {
-				newMove = new Rectangle(g.x-g.width-10,g.y+10,1,1);
-			}
-			else if ((g.x<h.x)&&(g.y>h.y)) {
-				newMove = new Rectangle(g.x+10,g.y-g.height-10,1,1);
-			}
-			else if((g.x>h.x) &&(g.y>h.y)) {
-				newMove = new Rectangle(g.x-g.width-10,g.y-g.height-10,1,1);
-			}
-			
-			
-			checkMove();
-			while(moveIntersects) {
-				
-			}
-		}
-		gruntMove = false;
+			gruntMove = false;
+			moveIntersects = false;
 		}
 	}
-	void checkMove() {
+
+	void checkMove(grunt g) {
+
 		moveIntersects = false;
 		for (terrain v : t) {
 
-			if(newMove.intersects(v.collisionBox)) {
+			if (newMove.intersects(v.collisionBox)) {
 				moveIntersects = true;
 				break;
 			}
-	}
-	}
+		}
+		if(!moveIntersects) {
+			g.takeTurn();
+			g.setXandY(newMove.x, newMove.y);
+			}
+		}
 
 	void drawEndState(Graphics g) {
 		g.setColor(Color.BLACK);
@@ -272,15 +349,15 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 	}
 
 	void checkProjectileMove() {
-		Iterator <projectile> g = p.iterator();
+		Iterator<projectile> g = p.iterator();
 		while (g.hasNext()) {
 			projectile c = g.next();
-			if ((c.x == c.newX)&&(c.y == c.newY)) {
+			if ((c.x == c.newX) && (c.y == c.newY)) {
 				g.remove();
 				System.out.println("removed knife");
 			}
 		}
-		
+
 	}
 
 	final int MENU = 1;
@@ -337,20 +414,18 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 					attackMode = false;
 					turn = enemyTurn;
 					gruntMove = true;
-					for(grunt g:grunts) {
-					g.setXandY(h.x, h.y);
+					for (grunt g : grunts) {
 						if (h.collisionBox.intersects(g.collisionBox)) {
 							currentState = END;
 						}
 					}
-					}
-				turn = playerTurn;
-					removeProjectiles();
 				}
-				System.out.println(attackMode);
+				turn = playerTurn;
+				removeProjectiles();
 			}
+			System.out.println(attackMode);
 		}
-	
+	}
 
 	@Override
 	public void keyReleased(KeyEvent arg0) {
@@ -365,31 +440,31 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 	}
 
 	void startGame() {
-		
-		while (t.size() < 35) {
-			int terrainX = rand.nextInt(1400) + 100;
-			int terrainY = rand.nextInt(900) + 100;
-			int terrainWidth = rand.nextInt(200) + 20;
-			int terrainHeight = rand.nextInt(100) + 10;
-			Rectangle terrainBox = new Rectangle(terrainX, terrainY, terrainWidth, terrainHeight);
-			boolean intersecting = false;
-			for (terrain z : t) {
-				if (terrainBox.intersects(z.collisionBox)) {
-					intersecting = true;
 
-				} else {
-					intersecting = false;
-				}
-
-			}
-			if (intersecting == false) {
-				t.add(new terrain(terrainX, terrainY, terrainWidth, terrainHeight, 10, 10));
-			}
-			
-		}
-		//t.add(new terrain(1000, 500, 100, 100, 10,10));
-		//grunts.add(new grunt (1110,610, 25, 25, 10,10));
-		addGrunt();
+//		while (t.size() < 35) {
+//			int terrainX = rand.nextInt(1400) + 100;
+//			int terrainY = rand.nextInt(900) + 100;
+//			int terrainWidth = rand.nextInt(200) + 20;
+//			int terrainHeight = rand.nextInt(100) + 10;
+//			Rectangle terrainBox = new Rectangle(terrainX, terrainY, terrainWidth, terrainHeight);
+//			boolean intersecting = false;
+//			for (terrain z : t) {
+//				if (terrainBox.intersects(z.collisionBox)) {
+//					intersecting = true;
+//
+//				} else {
+//					intersecting = false;
+//				}
+//
+//			}
+//			if (intersecting == false) {
+//				t.add(new terrain(terrainX, terrainY, terrainWidth, terrainHeight, 10, 10));
+//			}
+//			
+//		}
+		t.add(new terrain(1000, 500, 100, 100, 10, 10));
+		grunts.add(new grunt(1110, 610, 25, 25, 10, 10));
+//		addGrunt();
 //		for (int i = 0; i < 13; i++) {
 //			addGrunt();
 //		}
