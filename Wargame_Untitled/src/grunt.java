@@ -1,9 +1,10 @@
 
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
+
+import javax.imageio.ImageIO;
 public class grunt extends GameObject {
 	public static BufferedImage image;
 	public static boolean needImage = true;
@@ -11,20 +12,42 @@ public class grunt extends GameObject {
 	int newX;
 	int newY;
 	Rectangle movementRange ;
+	long startCount = 0;
 	
 	grunt(int a, int b, int c, int d, int o, int p) {
 		super(a, b, c, d, o, p);
 		movementRange = new Rectangle (x-10,y-10,width+20,height+20);
 		// TODO Auto-generated constructor stub
 	}
+	int frameNum = 0;
 	void draw(Graphics g) {
-		if (gotImage) {
-			g.drawImage(image, x, y, width, height, null);
-		} else {
-			g.setColor(Color.RED);
-			g.fillRect(x, y, width, height);
+//		if((frameNum >= 0)||(frameNum <= 5)) {
+//			loadImage("frame_0_delay-0.1s.gif");
+//		frameNum++;
+//		}
+//		else if((frameNum >= 6)||(frameNum <= 12)) {
+//			loadImage("frame_1_delay-0.1s.gif");
+//			frameNum++;
+//		}
+//		else if((frameNum >= 13)||(frameNum <= 25)) {
+//			loadImage("frame_2_delay-0.2s.gif");
+//			frameNum++;
+//		}
+//		else if((frameNum >= 26)||(frameNum <= 35)) {
+//			loadImage("frame_3_delay-0.15s.gif");
+//		frameNum++;
+//		}
+//		else if((frameNum >= 37)||(frameNum <= 46)) {
+//			loadImage("frame_4_delay-0.15s.gif");
+//		frameNum++;
+//		}
+//		else {
+//			frameNum =0;
+//		}
+		if(GameManager.getCounter()-startCount > 60) {
 			
 		}
+		g.drawImage(image, x, y, width, height, null);
 	}
 	int speed = 10;
 	int xDiff;
@@ -51,5 +74,16 @@ public class grunt extends GameObject {
 		this.newY = newY;
 		xDiff = newX-x;
 		yDiff = newY-y;
+	}
+	void loadImage(String imageFile) {
+		if (needImage) {
+			try {
+				image = ImageIO.read(this.getClass().getResourceAsStream(imageFile));
+				gotImage = true;
+			} catch (Exception e) {
+
+			}
+			needImage = false;
+		}
 	}
 }
