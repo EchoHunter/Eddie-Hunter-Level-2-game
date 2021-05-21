@@ -37,7 +37,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 	boolean gruntMove = false;
 	static long counter =0;
 	GameManager() {
-		frameDraw = new Timer(1000 / 44, this);
+		frameDraw = new Timer(1000 / 60, this);
 		frameDraw.start();
 	}
 
@@ -161,8 +161,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 	void addGrunt() {
 		boolean addgrunt = true;
 
-		grunt testGrunt = new grunt(rand.nextInt(GameRunner.w - 235) + 200, rand.nextInt(GameRunner.h - 235) + 200, 35,
-				35, 0, 0);
+		grunt testGrunt = new grunt(rand.nextInt(GameRunner.w - 235) + 200, rand.nextInt(GameRunner.h - 235) + 200, 45 ,45, 0, 0);
 		while (addgrunt) {
 			boolean gruntIntersects = false;
 			if (!gruntIntersects) {
@@ -170,7 +169,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 					if (testGrunt.collisionBox.intersects(x.collisionBox)) {
 						gruntIntersects = true;
 						testGrunt = new grunt(rand.nextInt(GameRunner.w - 235) + 200,
-								rand.nextInt(GameRunner.h - 235) + 200, 35, 35, 0, 0);
+								rand.nextInt(GameRunner.h - 235) + 200, 45, 45, 0, 0);
 						break;
 					}
 				}
@@ -189,6 +188,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 			grunt c = z.next();
 			if (c.isActive == false) {
 				z.remove();
+				gruntCount--;
 				System.out.println("removed knife");
 			}
 		}
@@ -234,6 +234,12 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 	    }
 	}
 	
+	boolean anyGruntsLeft() {
+		if(gruntCount == 0) {
+			return false;
+		}
+		return true;
+	}
 	int[] getNextMove(grunt g) {
 	    int attempts = 0;
 	    double angleToHero = Math.atan2(h.y - g.y, h.x - g.x);
@@ -443,6 +449,16 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 		g.drawString("Press ENTER to return to the menu", 55, 400);
 
 	}
+	
+	void drawWinState(Graphics g) {
+		g.setColor(Color.BLUE);
+		g.fillRect(0, 0, GameRunner.w, GameRunner.h);
+		g.setFont(titleFont);
+		g.setColor(Color.ORANGE);
+		g.drawString("Victory",650 , 70);
+		loadImage("trophy moment.png");
+		g.drawImage(image, 500, 140, null, null);
+	}
 
 	void updateOpeningState() {
 
@@ -462,6 +478,9 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 			}
 		}
 		removeGrunts();
+		if(anyGruntsLeft() == false) {
+			endGame();
+		}
 	}
 
 	void updateEndState() {
@@ -483,6 +502,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 	final int MENU = 1;
 	final int GAME = 2;
 	final int END = 3;
+	final int WIN = 4;
 
 	final int playerTurn = 0;
 	final int enemyTurn = 1;
@@ -497,10 +517,10 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 		// TODO Auto-generated method stub
 		if (arg0.getKeyCode() == KeyEvent.VK_ENTER) {
 
-			if (currentState == END) {
+			if ((currentState == END)||(currentState == WIN)) {
 				currentState = MENU;
 			}
-
+			
 			else if (currentState == MENU) {
 				if (enterTimes == 0) {
 					JOptionPane.showMessageDialog(null, "Are you sure? If you fail you must start again");
@@ -515,7 +535,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 
 			else if (currentState == GAME) {
 				currentState++;
-				endGame();
+				
 			}
 		}
 
@@ -599,7 +619,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 	}
 
 	void endGame() {
-
+currentState = WIN;
 	}
 
 	boolean checkWall() {
@@ -625,6 +645,9 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 
 		} else if (currentState == END) {
 			drawEndState(g);
+		}
+		else if (currentState == WIN) {
+			drawWinState(g);
 		}
 	}
 

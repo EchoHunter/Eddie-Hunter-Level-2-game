@@ -90,10 +90,11 @@ public class grunt extends GameObject {
 				super.x += Math.cos(angleRad) * speed;
 				super.y += Math.sin(angleRad) * speed;
 				moveLimit += speed;
-			if(GameManager.getCounter() % 44 == 0) {
-				imageStateIndex = (imageStateIndex +1)% imageState.length;
+		
 			}
-			}
+		}
+		if(GameManager.getCounter() % 5 == 0) {
+			imageStateIndex = (imageStateIndex +1)% imageState.length;
 		}
 		movementRange.setBounds(x - 17, y - 17, 20 + width, 20 + height);
 	}
