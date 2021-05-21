@@ -37,7 +37,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 	boolean gruntMove = false;
 	static long counter =0;
 	GameManager() {
-		frameDraw = new Timer(1000 / 60, this);
+		frameDraw = new Timer(1000 / 44, this);
 		frameDraw.start();
 	}
 
