@@ -47,7 +47,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 		g.fillRect(0, 0, GameRunner.w, GameRunner.h);
 		g.setFont(titleFont);
 		g.setColor(Color.YELLOW);
-		g.drawString("Working Title", 55, 70);
+		g.drawString("Kill a Bunch of Squids in a Dungeon", 55, 70);
 
 		g.setFont(lowerFont);
 		g.setColor(Color.YELLOW);
