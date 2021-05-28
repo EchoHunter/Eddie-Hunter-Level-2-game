@@ -22,6 +22,7 @@ import javax.swing.Timer;
 public class GameManager extends JPanel implements KeyListener, ActionListener, MouseListener, MouseMotionListener {
 	public static BufferedImage image;
 	public static BufferedImage knife;
+	public static BufferedImage trophy;
 	public static boolean needImage = true;
 	public static boolean gotImage = false;
 	Timer frameDraw;
@@ -456,8 +457,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 		g.setFont(titleFont);
 		g.setColor(Color.ORANGE);
 		g.drawString("Victory",650 , 70);
-		loadImage("trophy moment.png");
-		g.drawImage(image, 500, 140, null, null);
+		g.drawImage(trophy, 500, 140, null, null);
 	}
 
 	void updateOpeningState() {
@@ -515,6 +515,9 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 	@Override
 	public void keyPressed(KeyEvent arg0) {
 		// TODO Auto-generated method stub
+		if (arg0.getKeyCode() == KeyEvent.VK_0) {
+			currentState = WIN;
+		}
 		if (arg0.getKeyCode() == KeyEvent.VK_ENTER) {
 
 			if ((currentState == END)||(currentState == WIN)) {
@@ -554,6 +557,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 					attackMode = false;
 					turn = enemyTurn;
 					gruntMove = true;
+					knivesUsed =0;
 					for (grunt g : grunts) {
 						if (h.collisionBox.intersects(g.collisionBox)) {
 							currentState = END;
@@ -584,8 +588,8 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 	    h.x = 50;
 	    h.y = 50;
 		while (t.size() < 35) {
-			int terrainX = rand.nextInt(1400) + 100;
-			int terrainY = rand.nextInt(900) + 100;
+			int terrainX = rand.nextInt(1450) + 50;
+			int terrainY = rand.nextInt(950) + 50;
 			int terrainWidth = rand.nextInt(200) + 20;
 			int terrainHeight = rand.nextInt(100) + 10;
 			Rectangle terrainBox = new Rectangle(terrainX, terrainY, terrainWidth, terrainHeight);
@@ -794,6 +798,7 @@ else {
 			try {
 				image = ImageIO.read(this.getClass().getResourceAsStream(imageFile));
 				knife = ImageIO.read(this.getClass().getResourceAsStream("kanife.png"));
+				trophy = ImageIO.read(this.getClass().getResourceAsStream("trophy moment.png"));
 				gotImage = true;
 			} catch (Exception e) {
 
