@@ -72,19 +72,16 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 			if(knivesUsed ==0) {
 			g.drawImage(knife,1150 ,50,100, 100, null );
 			g.drawImage(knife,1200 ,50,100, 100, null );
-			g.drawImage(knife,1250 ,50,100, 100, null );
 			}
 			else if (knivesUsed ==1) {
 				g.drawImage(knife,1150 ,50,100, 100, null );
-				g.drawImage(knife,1200 ,50,100, 100, null );
+				
 			}
-			else if(knivesUsed ==2) {
-				g.drawImage(knife,1150 ,50,100, 100, null );
+			
 			}
-			}
-		h.draw(g);
-		drawTerrain(g);
+		h.draw(g);		
 		drawProjectiles(g);
+		drawTerrain(g);
 		drawGrunt(g);
 	}
 
@@ -251,7 +248,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 	     * grunt move distance isn't calculated to an exact value. 100 plus a
 	     * tolerance of 50 works good enough.
 	     */
-	    int moveDistance = 115;
+	    int moveDistance = 225;
 	    
 	    while( attempts < 32 && !haveMove ) {
 	        attempts++;
@@ -587,9 +584,9 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 	    grunts.clear();
 	    h.x = 50;
 	    h.y = 50;
-		while (t.size() < 35) {
-			int terrainX = rand.nextInt(1450) + 50;
-			int terrainY = rand.nextInt(950) + 50;
+		while (t.size() < 50) {
+			int terrainX = rand.nextInt(1475) + 25;
+			int terrainY = rand.nextInt(975) + 25;
 			int terrainWidth = rand.nextInt(200) + 20;
 			int terrainHeight = rand.nextInt(100) + 10;
 			Rectangle terrainBox = new Rectangle(terrainX, terrainY, terrainWidth, terrainHeight);
@@ -701,7 +698,7 @@ public static long getCounter() {
 		checkButton();
 		if (turn == playerTurn) {
 			if (attackMode) {
-if(knivesUsed>= 3) {
+if(knivesUsed>= 2) {
 	knivesUsed = 0;
 	turn = enemyTurn;
 	

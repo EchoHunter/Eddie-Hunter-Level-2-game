@@ -5,6 +5,8 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
+import javax.imageio.ImageIO;
+
 public class hero extends GameObject {
     public static BufferedImage image;
     public static boolean needImage = true;
@@ -29,7 +31,8 @@ public class hero extends GameObject {
         this.originy = p;
     }
     void draw(Graphics g) {
-        if (gotImage) {
+        loadImage("the funny rogue guy.png");
+    	if (gotImage) {
             g.drawImage(image, x, y, width, height, null);
         } else {
             g.setColor(Color.BLUE);
@@ -50,7 +53,7 @@ public class hero extends GameObject {
 
             // Future hero location
             g2d.setColor(Color.BLUE);
-            g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.2f));
+            g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.1f));
             g2d.fillRect(this.futureX, this.futureY, this.width, this.height);
             
             // Reset transparency so it doesn't affect other drawn objects
@@ -122,4 +125,15 @@ public class hero extends GameObject {
 
         return position;
     }
+    void loadImage(String imageFile) {
+		if (needImage) {
+			try {
+				image = ImageIO.read(this.getClass().getResourceAsStream(imageFile));
+				gotImage = true;
+			} catch (Exception e) {
+
+			}
+			needImage = false;
+		}
+	}
 }

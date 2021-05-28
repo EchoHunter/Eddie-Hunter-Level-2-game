@@ -83,7 +83,7 @@ public class grunt extends GameObject {
 
 	void update() {
 		super.update();
-		if (moveLimit < 100) {
+		if (moveLimit < 200) {
 			if ((Math.abs(xDiff) > speed) || (Math.abs(yDiff) > speed)) {
 				double angleRad = Math.atan2(yDiff, xDiff);
 
