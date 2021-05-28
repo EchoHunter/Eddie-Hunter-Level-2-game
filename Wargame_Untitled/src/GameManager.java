@@ -585,8 +585,8 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 	    h.x = 50;
 	    h.y = 50;
 		while (t.size() < 40) {
-			int terrainX = rand.nextInt(1475) + 25;
-			int terrainY = rand.nextInt(975) + 25;
+			int terrainX = rand.nextInt(1425) + 75;
+			int terrainY = rand.nextInt(925) + 75;
 			int terrainWidth = rand.nextInt(200) + 20;
 			int terrainHeight = rand.nextInt(100) + 10;
 			Rectangle terrainBox = new Rectangle(terrainX, terrainY, terrainWidth, terrainHeight);
