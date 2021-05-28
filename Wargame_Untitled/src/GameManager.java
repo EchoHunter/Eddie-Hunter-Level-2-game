@@ -584,7 +584,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 	    grunts.clear();
 	    h.x = 50;
 	    h.y = 50;
-		while (t.size() < 50) {
+		while (t.size() < 40) {
 			int terrainX = rand.nextInt(1475) + 25;
 			int terrainY = rand.nextInt(975) + 25;
 			int terrainWidth = rand.nextInt(200) + 20;
