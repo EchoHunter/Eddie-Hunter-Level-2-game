@@ -542,7 +542,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 		if (arg0.getKeyCode() == KeyEvent.VK_SPACE) {
 			if (currentState == MENU) {
 				JOptionPane.showMessageDialog(null,
-						"click and drag on your character to move, press space to enter attack mode and press space to leave it (when you leave attack mode, your turn ends). When in attack mode, click in the direction you want to throw a knife and a knife will move until it hits something(or someone)");
+						"click and drag on your character to move, press space to enter attack mode and press space again to end your turn. (when you run out of knives, your turn ends). When in attack mode, click in the direction you want to throw a knife and a knife will move until it hits something(or someone)");
 			}
 			if (currentState == GAME) {
 				spacePressed++;
@@ -826,4 +826,5 @@ else {
 		g.drawImage(image, 0, 0, 1500, 1000, null);
 		h.draw(g);
 	}
+	
 }

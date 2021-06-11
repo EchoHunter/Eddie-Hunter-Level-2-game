@@ -31,7 +31,7 @@ public class hero extends GameObject {
         this.originy = p;
     }
     void draw(Graphics g) {
-        loadImage("the funny rogue guy.png");
+    	loadImage("the funny rogue guy.png");
     	if (gotImage) {
             g.drawImage(image, x, y, width, height, null);
         } else {
