@@ -159,7 +159,7 @@ public class GameManager extends JPanel implements KeyListener, ActionListener, 
 	void addGrunt() {
 		boolean addgrunt = true;
 
-		grunt testGrunt = new grunt(rand.nextInt(GameRunner.w - 235) + 200, rand.nextInt(GameRunner.h - 235) + 200, 45 ,45, 0, 0);
+		grunt testGrunt = new grunt(rand.nextInt(GameRunner.w - 255) + 150, rand.nextInt(GameRunner.h - 255) + 150, 45 ,45, 0, 0);
 		while (addgrunt) {
 			boolean gruntIntersects = false;
 			if (!gruntIntersects) {
